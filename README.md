@@ -257,7 +257,7 @@ Para implantação no **Streamlit Community Cloud**, as chaves devem ser configu
 
 A versão modular do sistema foi desenvolvida a partir do notebook consolidado do projeto de pesquisa:
 
-`Projeto-04-AgenteIA-InundacaoUrbana-MariaHelena-Multiagente-v06.ipynb`
+`Projeto-04-AgenteIA-InundacaoUrbana-Multiagente-v06.ipynb`
 
 Foram preservados os principais elementos metodológicos do protótipo, incluindo:
 
