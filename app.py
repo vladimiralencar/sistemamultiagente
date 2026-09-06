@@ -73,19 +73,13 @@ section[data-testid="stSidebar"]>div{padding-top:1rem}.sidebar-brand{padding:.2r
 /* Layout aprovado: menu limpo, cidade centralizada no fluxo lateral e marca no rodapé */
 section[data-testid="stSidebar"]>div{display:flex;flex-direction:column;min-height:100vh;padding-top:1.15rem}
 .nav-caption{color:#D8EAF7;font-size:.74rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase;padding:.15rem .35rem .45rem;opacity:.9}
-section[data-testid="stSidebar"] div[role="radiogroup"]{gap:.45rem}
-section[data-testid="stSidebar"] div[role="radiogroup"] label{position:relative;background:transparent;border:1px solid transparent;border-radius:10px;padding:.82rem .9rem .82rem 3rem;min-height:52px;transition:.15s ease;display:flex;align-items:center}
-section[data-testid="stSidebar"] div[role="radiogroup"] label:hover{background:rgba(255,255,255,.07)}
-section[data-testid="stSidebar"] div[role="radiogroup"] label:focus-within{outline:3px solid rgba(244,181,30,.95);outline-offset:2px}
-section[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked){background:linear-gradient(90deg,#1478C6,#0E5F9F);box-shadow:0 5px 16px rgba(0,0,0,.12)}
-section[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child{display:none!important}
-section[data-testid="stSidebar"] div[role="radiogroup"] input{display:none!important}
-section[data-testid="stSidebar"] div[role="radiogroup"] [data-testid="stMarkdownContainer"] p{color:white!important;margin:0!important;font-weight:650;font-size:1rem}
-section[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) [data-testid="stMarkdownContainer"] p{font-weight:850}
-section[data-testid="stSidebar"] div[role="radiogroup"] label::before{content:"";position:absolute;left:.95rem;top:50%;transform:translateY(-50%);width:22px;height:22px;background-size:22px 22px;background-repeat:no-repeat;background-position:center;opacity:.98}
-section[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(1)::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11.5 12 4l9 7.5'/%3E%3Cpath d='M5.5 10.5V20h13v-9.5'/%3E%3Cpath d='M9.5 20v-6h5v6'/%3E%3C/svg%3E")!important}
-section[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(2)::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3h9l4 4v14H6z'/%3E%3Cpath d='M14 3v5h5'/%3E%3Cpath d='M9 13h6M9 17h6'/%3E%3C/svg%3E")!important}
-section[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(3)::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='2'/%3E%3Cpath d='m4 7 8 6 8-6'/%3E%3C/svg%3E")!important}
+
+.nav-list{display:flex;flex-direction:column;gap:.42rem;margin-top:.1rem}
+.nav-link{position:relative;display:flex;align-items:center;gap:13px;min-height:52px;padding:.82rem .95rem;border-radius:10px;border:1px solid transparent;color:white!important;text-decoration:none!important;font-size:1rem;font-weight:650;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease}
+.nav-link:hover{background:rgba(255,255,255,.07);color:white!important;text-decoration:none!important}
+.nav-link:focus-visible{outline:3px solid rgba(244,181,30,.95);outline-offset:2px}
+.nav-link.active{background:linear-gradient(90deg,#1478C6,#0E5F9F);box-shadow:0 5px 16px rgba(0,0,0,.12);font-weight:850}
+.nav-link .icon-svg{width:22px;height:22px;color:white}
 .side-divider{height:1px;background:rgba(255,255,255,.22);margin:1.15rem .35rem 1.25rem}
 .city-head{display:flex;align-items:center;gap:9px;color:white;font-weight:800;margin:0 .35rem .55rem;font-size:.98rem}.city-head .icon-svg{width:19px;height:19px}
 .sidebar-spacer{flex:1;min-height:8rem}
@@ -97,13 +91,29 @@ section[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(3)::befo
 </style>
 """, unsafe_allow_html=True)
 
+# Navegação em HTML para evitar os marcadores nativos do st.radio no deploy.
+page_key = st.query_params.get("page", "analise")
+if isinstance(page_key, list):
+    page_key = page_key[0] if page_key else "analise"
+page_key = str(page_key).lower()
+page_map = {"analise": "Análise", "sobre": "Sobre o projeto", "contato": "Contato"}
+pagina = page_map.get(page_key, "Análise")
+
 with st.sidebar:
     st.markdown('<div class="nav-caption">Navegação</div>', unsafe_allow_html=True)
-    pagina = st.radio(
-        "Navegação",
-        ["Análise", "Sobre o projeto", "Contato"],
-        label_visibility="collapsed",
-    )
+    nav_html = '<div class="nav-list">'
+    for key, label, icon in [
+        ("analise", "Análise", "home"),
+        ("sobre", "Sobre o projeto", "info"),
+        ("contato", "Contato", "mail"),
+    ]:
+        active = " active" if pagina == label else ""
+        nav_html += (
+            f'<a class="nav-link{active}" href="?page={key}">'
+            f'{icon_svg(icon)}<span>{label}</span></a>'
+        )
+    nav_html += '</div>'
+    st.markdown(nav_html, unsafe_allow_html=True)
     st.markdown('<div class="side-divider"></div>', unsafe_allow_html=True)
     st.markdown(f'<div class="city-head">{icon_svg("pin")}<span>Cidade</span></div>', unsafe_allow_html=True)
     city = st.selectbox("Cidade", list(CIDADES.keys()), label_visibility="collapsed")
